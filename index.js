@@ -36,13 +36,45 @@ app.use(express.json());
 
     if (founduser){
         const token = jwt.sign({
-        username:username,JWT_SECRET
-    });
+            username: username
+        }, JWT_SECRET);
 
-    res.json({
-        token:token
-    })
+        res.json({
+            token: token
+        });
+    } else {
+        res.send("Invalid username or password");
     }
+
+    
 
 
  })
+
+ app.get("/me",function(req,res){
+    const token =req.headers.token;
+
+    const decodedinfo =jwt.verify(token,JWT_SECRET);
+    const username = decodedinfo.username;
+    let founduser = null;
+
+    for (let i=0;i<users.length;i++){
+        if (users[i].username==username){
+            founduser=users[i];
+        }
+    }
+
+    if (founduser) {
+        res.json({
+            username: founduser.username,
+            password: founduser.password
+        });
+    } else {
+        res.send("User not found");
+    }
+
+
+
+ })
+
+ app.listen(3000);
