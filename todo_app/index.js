@@ -6,7 +6,7 @@ const { UserModel, TodoModel } = require('./db');
 const mongoose = require('mongoose');
 
 app.use(express.json());
-// ViUA7mQ3sIQ2DT6o
+
 mongoose.connect("mongodb+srv://Aditya21:ViUA7mQ3sIQ2DT6o@cluster0.og6gofh.mongodb.net/todo_app")
 
 app.post("/signup", async function (req, res) {
@@ -37,7 +37,7 @@ app.post("/login", async function (req, res) {
 });
 
 if (founduser){
-    const token = jwt.sign({id :UserModel.id
+    const token = jwt.sign({id :founduser.id
 },JWT_SECRET);
     res.json({
         token:token,
@@ -53,11 +53,54 @@ else {
 
 })
 
-app.post("/todos", function (req, res) {
+app.post("/todo", auth ,function (req, res) {
+    const title=req.body.title;
+    const completed = req.body.completed;
+    const userId = req.UserId;
+    TodoModel.create({
+        userId: userId,
+        title: title,
+        completed: completed
+    });
+    res.json({
+        message: "Todo created successfully"
+    });
+
+
 });
 
-app.get("/todos", function (req, res) {
+app.get("/todos", auth, async function (req, res) {
+    const userId = req.UserId;
+const todos = await TodoModel.find({
+        userId: userId
+    })
+    res.json({
+        todos: todos
+   
+
+
+    })
 });
+
+
+
+function  auth (req,res,next){
+    const token = req.headers.token;
+    
+    const decodedData = jwt.verify(token, JWT_SECRET);
+    if (decodedData){
+        req.UserId = decodedData.id;
+        next();
+    }
+    else(
+        res.json({
+            message: "You are not authenticated"
+        }
+    )
+)
+
+
+}
 
 app.listen(3000);
 
