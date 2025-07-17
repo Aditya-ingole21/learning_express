@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 app.use(express.json());
 
-mongoose.connect("mongodb+srv://Aditya21:ViUA7mQ3sIQ2DT6o@cluster0.og6gofh.mongodb.net/todo_app")
+mongoose.connect("mongodb+srv://@cluster0.og6gofh.mongodb.net/todo_app")
 
 app.post("/signup", async function (req, res) {
 
